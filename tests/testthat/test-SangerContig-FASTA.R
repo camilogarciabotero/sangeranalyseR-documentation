@@ -1,0 +1,33 @@
+### ============================================================================
+### SangerContig ABIF Initial test
+### ============================================================================
+test_that("sangerContigFa Initial test", {
+    expect_type(sangerContigFa, "S4")
+    expect_s4_class(sangerContigFa, "SangerContig")
+    expect_equal(sangerContigFa@inputSource, "FASTA")
+    expect_equal(sangerContigFa@contigName, "Achl_ACHLO006-09")
+    expect_equal(sangerContigFa@suffixForwardRegExp, "_[0-9]*_F")
+    expect_equal(sangerContigFa@suffixReverseRegExp, "_[0-9]*_R")
+    expect_equal(sangerContigFa@trimmingMethodSC, "")
+    expect_equal(sangerContigFa@minReadsNum, 2)
+    expect_equal(sangerContigFa@minReadLength, 20)
+    expect_equal(sangerContigFa@refAminoAcidSeq, "SRQWLFSTNHKDIGTLYFIFGAWAGMVGTSLSILIRAELGHPGALIGDDQIYNVIVTAHAFIMIFFMVMPIMIGGFGNWLVPLMLGAPDMAFPRMNNMSFWLLPPALSLLLVSSMVENGAGTGWTVYPPLSAGIAHGGASVDLAIFSLHLAGISSILGAVNFITTVINMRSTGISLDRMPLFVWSVVITALLLLLSLPVLAGAITMLLTDRNLNTSFFDPAGGGDPILYQHLFWFFGHPEVYILILPGFGMISHIISQESGKKETFGSLGMIYAMLAIGLLGFIVWAHHMFTVGMDVDTRAYFTSATMIIAVPTGIKIFSWLATLHGTQLSYSPAILWALGFVFLFTVGGLTGVVLANSSVDIILHDTYYVVAHFHYVLSMGAVFAIMAGFIHWYPLFTGLTLNNKWLKSHFIIMFIGVNLTFFPQHFLGLAGMPRRYSDYPDAYTTWNIVSTIGSTISLLGILFFFFIIWESLVSQRQVIYPIQLNSSIEWYQNTPPAEHSYSELPLLTN")
+    expect_equal(sangerContigFa@minFractionCall, 0.5)
+    expect_equal(sangerContigFa@maxFractionLost, 0.5)
+    expect_equal(sangerContigFa@acceptStopCodons, TRUE)
+    expect_equal(sangerContigFa@readingFrame, 1)
+    expect_equal(as.character(sangerContigFa@contigSeq), "TATATCGACGGCCAGTGGTCAACAAATCATAAAGATATTGGAACTTTATATTTTATTCTGGGCGTCTGAGCAGGAATGGTTGGAGCCGGTATAAGACTTCTAATTCGAATCGAGCTAAGACAACCAGGAGCGTTCCTGGGCAGAGACCAACTATACAATACTATCGTTACTGCACACGCATTTGTAATAATCTTCTTTCTAGTAATGCCTGTATTCATCGGGGGATTCGGAAACTGGCTTTTACCTTTAATACTTGGAGCCCCCGATATAGCATTCCCTCGACTCAACAACATGAGATTCTGACTACTTCCCCCATCACTGATCCTTTTAGTGTCCTCTGCGGCGGTAGAAAAAGGCGCTGGTACGGGGTGAACTGTTTATCCGCCTCTAGCAAGAAATCTTGCCCACGCAGGCCCGTCTGTAGATTTAGCCATCTTTTCCCTTCATTTAGCGGGTGCGTCTTCTATTCTAGGGGCTATTAATTTTATCACCACAGTTATTAATATGCGTTGAAGAGGATTACGTCTTGAACGAATTCCCCTGTTTGTCTGAGCTGTGCTAATTACAGTTGTTCTTCTACTTCTATCTTTACCAGTGCTAGCAGGTGCCATTACCATACTTCTTACCGAC")
+    expect_equal(length(sangerContigFa@forwardReadList), 1)
+    expect_equal(length(sangerContigFa@reverseReadList), 1)
+})
+
+
+### ============================================================================
+### SangerContig Functions test
+### ============================================================================
+test_that("sangerContigFa - FASTA functions test -forward", {
+    expect_message(updateQualityParam(sangerContigFa),
+                   paste("SangerContig with 'FASTA' inputSource",
+                         "cannot update quality parameters"))
+})
+

@@ -1,0 +1,354 @@
+---
+title: "'SangerContig' Report"
+author: "Author: Kuan-Hao Chao (u7022787@anu.edu.au)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  BiocStyle::html_document:
+    toc_float: true
+    fig_caption: yes
+  BiocStyle::pdf_document: default
+#bibliography: bibliography.bib
+params:
+  SangerContig: NULL
+  outputDir: ""
+  forwardReadFN: NULL
+  reverseReadFN: NULL
+  navigationAlignmentFN: NULL
+fontsize: 14pt
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div style="margin-left:50px; padding-left:-50;margin-top:50px; margin-bottom:50px; border-left: 4px solid #d3d6db;">
+`r if(!is.null(params$navigationAlignmentFN)){ "<p style='font-size: 15px; margin-left: 2px; color: gray;'>SangerAlignment Level</p>" }`
+<p style = "font-size: 15px; font-weight: bold; margin-left:-20px"><i class="fa fa-arrow-circle-right" style="margin-right: 10px; color: green"></i>SangerContig Level</p>
+<p style='font-size: 15px; margin-left: 2px; color: gray;'>SangerRead Level</p>
+</div>
+
+```{r echo=FALSE}
+library(sangeranalyseR)
+```
+
+
+# Basic Information:
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<div style="overflow: scroll;">
+<ul style="list-style-type:disc;">
+  <li>**Output Directory : **  <span>*`r params$outputDir`*</span></li>
+
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (params$SangerContig@inputSource == "ABIF" && !is.null(params$SangerContig@parentDirectory)) {
+    cat("<li>**Input Parent Directory : **  <span><i>", params$SangerContig@parentDirectory, "</i></span></li>")
+} else if (params$SangerContig@inputSource == "FASTA" && !is.null(params$SangerContig@fastaFileName) && !is.null(params$SangerContig@namesConversionCSV)){
+    cat("<li>**Fasta File Name : **  <span><i>", params$SangerContig@fastaFileName, "</i></span></li>")
+  if (!is.null(params$SangerContig@namesConversionCSV)) {
+    cat("<li>**Filename Conversion CSV : **  <span><i>", params$SangerContig@namesConversionCSV, "</i></span></li>")
+  }
+}
+```
+
+  <li>**Contig Name : **  <span><i>`r basename(params$SangerContig@contigName)`</i></span></li>
+
+  <li>**Trimming Method : **  <span>*`r params$SangerContig@trimmingMethodSC`*</span></li>
+  
+  <li>**Forward Reads Suffix Regex : **  <span>*`r params$SangerContig@suffixForwardRegExp`*</span></li>
+
+  <li>**Forward Read Number : **  <span>*`r length(params$SangerContig@forwardReadList)`*</span></li>
+
+  <li>**Reverse Reads Suffic Regex : **  <span>*`r params$SangerContig@suffixReverseRegExp`*</span></li>
+  
+  <li>**Reverse Read Number : **  <span>*`r length(params$SangerContig@reverseReadList)`*</span></li>
+  
+</ul>
+</div>
+</details>
+
+---
+
+# 'SangerContig' Input Parameters :
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<div style="overflow: scroll;">
+<ul style="list-style-type:disc;">
+  <li>**Minimum Read Number : **  <span class="tab">*`r params$SangerContig@minReadsNum`*</span></li>
+  
+  <li>**Minimum Read Length : **  <span class="tab">*`r params$SangerContig@minReadLength`*</span></li>
+  
+  <li>**Minimum Fraction Call : **  <span class="tab">*`r params$SangerContig@minFractionCall`*</span></li>
+
+  <li>**Maximum Fraction Lost : **  <span class="tab">*`r params$SangerContig@maxFractionLost`*</span></li>  
+  
+  <li>**Accept Stop Codons : **  <span class="tab">*`r params$SangerContig@acceptStopCodons`*</span></li>  
+  
+  <li>**Reading Frame : **  <span class="tab">*`r params$SangerContig@readingFrame`*</span></li>  
+</ul>
+</div>
+</details>
+
+---
+
+# Contig Sequence:
+
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<h3> Primary Sequence </h3>
+<div style="overflow: scroll;">
+```{r echo=FALSE, warning=FALSE}
+contigSeq <- unlist(strsplit(as.character(params$SangerContig@contigSeq), ""))
+contigSeqDF <- data.frame(t(data.frame(contigSeq)), stringsAsFactors = FALSE)
+colnames(contigSeqDF) <- substr(colnames(contigSeqDF), 2, 100)
+rownames(contigSeqDF) <- NULL
+AstyleList <- SetCharStyleList(contigSeqDF, "A", "#1eff00")
+TstyleList <- SetCharStyleList(contigSeqDF, "T", "#ff7a7a")
+CstyleList <- SetCharStyleList(contigSeqDF, "C", "#7ac3ff")
+GstyleList <- SetCharStyleList(contigSeqDF, "G", "#c9c9c9")
+styleList <- c(AstyleList, TstyleList, CstyleList, GstyleList)
+suppressWarnings(suppressMessages(
+    excelTable(data = contigSeqDF, defaultColWidth = 30,
+               editable = FALSE, rowResize = FALSE,
+               columnResize = FALSE, allowInsertRow = FALSE,
+               allowInsertColumn = FALSE, allowDeleteRow = FALSE,
+               allowDeleteColumn = FALSE, allowRenameColumn = FALSE,
+               style = styleList, loadingSpin = TRUE)
+))
+```
+<div style="overflow: scroll;">
+</details>
+
+---
+
+# Reference Amino Sequence :
+
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<h3> Genetic Code </h3>
+<div style="overflow: scroll;">
+```{r echo=FALSE, warning=FALSE}
+suppressWarnings(suppressMessages(
+      excelTable(data = t(data.frame(params$SangerContig@geneticCode)),
+                 defaultColWidth = 50, editable = FALSE, rowResize = FALSE,
+                 columnResize = FALSE, allowInsertRow = FALSE,
+                 allowInsertColumn = FALSE, allowDeleteRow = FALSE,
+                 allowDeleteColumn = FALSE, allowRenameColumn = FALSE)
+))
+```
+</div>
+
+<h3> Reference Amino Acid Sequence </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (params$SangerContig@refAminoAcidSeq != "") {
+  refAminoAcidSeqVec <- strsplit(params$SangerContig@refAminoAcidSeq, "")[[1]]
+    names(refAminoAcidSeqVec) <- c(1:length(refAminoAcidSeqVec))
+    suppressWarnings(suppressMessages(
+        excelTable(data =
+                     t(data.frame(refAminoAcidSeqVec)),
+                   defaultColWidth = 50, editable = FALSE, rowResize = FALSE,
+                   columnResize = FALSE, allowInsertRow = FALSE,
+                   allowInsertColumn = FALSE, allowDeleteRow = FALSE,
+                   allowDeleteColumn = FALSE, allowRenameColumn = FALSE)
+    ))
+} else {
+      cat("<p style='font-size: 13px; font-weight:bold'> 'refAminoAcidSeq' is empty. There are no 'refAminoAcidSeq' in this SangerContig. </p>")
+}
+
+```
+</div>
+</details>
+
+---
+
+# Contig Results:
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<h3> Reads Alignment </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+browseSeqHTML <- file.path(params$outputDir, "Reads_Alignment_BrowseSeqs.html")
+BrowseSeqs(DNAStringSet(params$SangerContig@alignment),
+           openURL=FALSE, htmlFile=browseSeqHTML)
+shiny::includeHTML(browseSeqHTML)
+```
+</div>
+<br>
+<h3> Difference Data Frame </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (all(dim(params$SangerContig@differencesDF) == c(0,0))) {
+    cat("<h4 style='font-weight: bold; font-style: italic;'> 'Differences' data frame is empty. </h4>")
+} else {
+    params$SangerContig@differencesDF %>%
+      kable() %>%
+      kable_styling()
+}
+```
+</div>
+<br>
+<h3> Distance Matrix </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (all(dim(params$SangerContig@distanceMatrix) == c(0,0))) {
+    cat("<h4 style='font-weight: bold; font-style: italic;'> 'Distance' Matrix is empty. </h4>")
+} else {
+    params$SangerContig@distanceMatrix %>%
+      kable() %>%
+      kable_styling()
+}
+```
+</div>
+<br>
+<h3> Dendrogram </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+ggdendrogram(params$SangerContig@dendrogram[[2]], rotate = TRUE)
+```
+</div>
+<div style="overflow: scroll;">
+```{r echo=FALSE, warning=FALSE}
+params$SangerContig@dendrogram[[1]] %>%
+    kable() %>%
+    kable_styling()
+```
+</div>
+<br>
+<h3> Indels Data Frame </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (all(dim(params$SangerContig@indelsDF) == c(0,0))) {
+    cat("<h4 style='font-weight: bold; font-style: italic;'> 'indelsDF' Data Frame is empty. </h4>")
+} else {
+    params$SangerContig@indelsDF %>%
+      kable() %>%
+      kable_styling()
+}
+```
+</div>
+<br>
+<h3> Stop Codons </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (all(dim(params$SangerContig@stopCodonsDF) == c(0,0))) {
+    cat("<h4 style='font-weight: bold; font-style: italic;'> 'stopCodonsDF' Data Frame is empty. </h4>")
+} else {
+    params$SangerContig@stopCodonsDF %>%
+      kable() %>%
+      kable_styling()
+}
+```
+</div>
+<br>
+<h3> Secondary Peak Data Frame </h3>
+<div style="overflow: scroll;">
+```{r results='asis', echo=FALSE, warning=FALSE}
+if (all(dim(params$SangerContig@secondaryPeakDF) == c(0,0))) {
+    cat("<p style='font-weight: bold; font-style: italic;'> 'secondaryPeakDF' Data Frame is empty. </p>")
+} else {
+    params$SangerContig@secondaryPeakDF %>%
+      kable() %>%
+      kable_styling()
+}
+```
+</div>
+</details>
+
+---
+
+<br>
+<br>
+<h1 style="font-weight: bold"><i style="margin-left: 20px" class="fa fa-chevron-circle-right"></i> Forward Read Reports </h1>
+
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<ul style="list-style-type:disc;">
+```{r, results='asis', echo=FALSE, warning=FALSE}
+if (!is.null(params$forwardReadFN)) {
+  for (i in 1:length(params$forwardReadFN)){
+      cat('<li style = "margin-top: 35px; font-weight: bold">')
+      cat('<a style = "margin-top: -10px" role="button" class="btn btn-info" href="', file.path(".", basename(dirname(params$forwardReadFN[[i]])), basename(params$forwardReadFN[[i]])), '">')
+      cat(paste0('Go to Read: "', basename(params$SangerContig@forwardReadList[[i]]@readFileName), '" Report'))
+      cat('</a>\n') 
+      cat('</li>')
+  }
+}
+```
+</ul>
+```{r, results='asis', echo=FALSE, warning=FALSE}
+if (is.null(params$forwardReadFN)) {
+    cat("<p style='font-size: 13px; font-weight:bold'> 'includeSangerRead' is 'FALSE'. Forward reads are not included in this report. </p>")
+}
+```
+</details>
+
+---
+
+<h1 style="font-weight: bold"><i style="margin-left: 20px" class="fa fa-chevron-circle-right"></i> Reverse Read Reports </h1>
+
+<details class="description"><summary data-open="CLOSE" data-close="MORE DETAILS"></summary>
+<ul style="list-style-type:disc;">
+```{r, results='asis', echo=FALSE, warning=FALSE}
+if (!is.null(params$reverseReadFN)) {
+  for (i in 1:length(params$reverseReadFN)){
+      cat('<li style = "margin-top: 35px; font-weight: bold">')
+      cat('<a style = "margin-top: -10px" role="button" class="btn btn-info" href="', file.path(".", basename(dirname(params$reverseReadFN[[i]])), basename(params$reverseReadFN[[i]])), '">')
+      cat(paste0('Go to Read: "', basename(params$SangerContig@reverseReadList[[i]]@readFileName), '" Report'))
+      cat('</a>\n') 
+      cat('</li>')
+  }
+}
+```
+</ul>
+```{r, results='asis', echo=FALSE, warning=FALSE}
+if (is.null(params$reverseReadFN)) {
+    cat("<p style='font-size: 13px; font-weight:bold'> 'includeSangerRead' is 'FALSE'. Reverse reads are not included in this report. </p>")
+}
+```
+</details>
+
+---
+
+`r if(!is.null(params$navigationAlignmentFN)){paste0('<br><br><a style="margin-left:-20px" href="', file.path("..", basename(params$navigationAlignmentFN)), '" class="btn btn-success btn-block btn-lg active" role="button">Back to \'SangerAlignment Report\'</a>')}`
+
+<style>
+li{
+    margin-top: 16px;
+}
+li:first-child {
+    margin-top:0;
+}
+
+.tab {position:absolute;left:380px; }
+
+.jexcel_content { 
+    height: 60px !important;
+}
+
+details.description[open] summary::after {
+  content: attr(data-open);
+  color: #d45050;
+  border-bottom: 2px solid #d45050;
+}
+
+details.description:not([open]) summary::after {
+  content: attr(data-close);
+  color: #4c9c6b;
+  border-bottom: 2px solid #4c9c6b;
+}
+
+.description {
+border-left: 4px solid #d3d6db;
+padding-left: 10px;
+}
+.description summary{
+  font-weight: bold;
+  font-size: 10px;
+  color: #383838;
+}
+
+span {
+  white-space:nowrap;
+}
+pre {
+  display: inline-block;
+}
+</style>

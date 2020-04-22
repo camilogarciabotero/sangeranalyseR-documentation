@@ -1,0 +1,77 @@
+Package: sangeranalyseR
+Type: Package
+Title: sangeranalyseR: a suite of functions for the analysis of Sanger sequence data in R
+Version: 0.99.21
+Date: 2015-12-18
+Author: Rob Lanfear <rob.lanfear@gmail.com>, Kuan-Hao Chao <ntueeb05howard@gmail.com>
+Maintainer: Kuan-Hao Chao <ntueeb05howard@gmail.com>
+biocViews: Genetics, Alignment, Sequencing, SangerSeq, Preprocessing, 
+           QualityControl, Visualization, GUI
+Description: This package builds on sangerseqR to allow users to create contigs
+             from collections of Sanger sequencing reads. It provides a wide 
+             range of options for a number of commonly-performed actions 
+             including read trimming, detecting secondary peaks, and detecting 
+             indels using a reference sequence. All parameters can be adjusted 
+             interactively either in R or in the associated Shiny applications. 
+             There is extensive online documentation, and the package can outputs 
+             detailed HTML reports, including chromatograms.
+License: GPL-2
+Encoding: UTF-8
+Depends: 
+    R (>= 4.0.0),
+    stringr,
+    ape,
+    Biostrings,
+    DECIPHER,
+    parallel,
+    reshape2,
+    phangorn,
+    sangerseqR,
+    gridExtra,
+    shiny,
+    shinydashboard,
+    shinyjs,
+    data.table,
+    plotly,
+    DT,
+    zeallot,
+    excelR,
+    shinycssloaders,
+    ggdendro,
+    shinyWidgets,
+    openxlsx,
+    tools,
+    rmarkdown,
+    kableExtra,
+    seqinr,
+    BiocStyle,
+    logger
+RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+Suggests: 
+    knitr,
+    testthat (>= 2.1.0)
+Collate: 
+    'AllGenerics.R'
+    'ClassChromatogramParam.R'
+    'ClassQualityReport.R'
+    'ClassSangerRead.R'
+    'ClassSangerAlignment.R'
+    'ClassSangerContig.R'
+    'Constructors.R'
+    'LoadMessage.R'
+    'MethodSangerAlignment.R'
+    'MethodSangerContig.R'
+    'MethodSangerRead.R'
+    'MethodShared.R'
+    'MethodsQualityReport.R'
+    'ShinySangerAlignmentServer.R'
+    'ShinySangerAlignmentUI.R'
+    'ShinySangerContigServer.R'
+    'ShinySangerContigUI.R'
+    'ShinyServerModule.R'
+    'UtilitiesFunc.R'
+    'UtilitiesFuncInputChecker.R'
+    'data.R'
+    'sangeranalyseR_package.R'
+    'sangeranalyseR_show_method.R'
