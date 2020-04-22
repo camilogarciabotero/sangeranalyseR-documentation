@@ -291,6 +291,11 @@ setMethod("readTable", "SangerRead", function(object, indentation = 0) {
     readFeature <- object@readFeature
     readFileNameAbs <- object@readFileName
     readFileNameBase <- basename(object@readFileName)
+    if (indentation = 0) {
+        log_info("********************************************")
+        log_info("******** SangerRead readTable print ********")
+        log_info("********************************************")
+    }
     if (object@inputSource == "ABIF") {
         TrimmingMethod <- object@QualityReport@TrimmingMethod
         M1TrimmingCutoff <- object@QualityReport@M1TrimmingCutoff

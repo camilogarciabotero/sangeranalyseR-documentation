@@ -334,3 +334,4 @@ setMethod("generateReportSC", "SangerContig",
                                 navigationAlignmentFN = navigationAlignmentFN))
     return(outputHtml)
 })
+
