@@ -241,7 +241,7 @@ setGeneric("launchAppSA", function(object, outputDir = NULL) {
 #' readTable(sangerContigData)
 #' readTable(sangerAlignmentData)
 #' }
-setGeneric("readTable", function(object, indentation, ...) {
+setGeneric("readTable", function(object, indentation = 0, ...) {
     standardGeneric("readTable")
 })
 

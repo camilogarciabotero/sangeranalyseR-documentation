@@ -291,7 +291,7 @@ setMethod("readTable", "SangerRead", function(object, indentation = 0) {
     readFeature <- object@readFeature
     readFileNameAbs <- object@readFileName
     readFileNameBase <- basename(object@readFileName)
-    if (indentation = 0) {
+    if (indentation == 0) {
         log_info("********************************************")
         log_info("******** SangerRead readTable print ********")
         log_info("********************************************")
