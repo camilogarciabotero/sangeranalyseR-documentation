@@ -23,13 +23,13 @@ Before starting the analysis, users need to prepare one **FASTA** file containin
   *  Reads that are in the same contig have to share the same contig name.
   *  Forward or reverse direction also has to be specified in the read names.
 
-There are three parameters, :code:`fastaFileName`, :code:`suffixForwardRegExp`, and :code:`suffixReverseRegExp`, that users need to provide so that program can automatically group all **FASTA** files.
+There are three parameters, :code:`fastaFileName`, :code:`REGEX_SuffixForward`, and :code:`REGEX_SuffixReverse`, that users need to provide so that program can automatically group all **FASTA** files.
 
 .. note::
 
   * :code:`fastaFileName`: The **FASTA** file that contains sequence of all reads. The read names have to follow the naming regulation.
-  * :code:`suffixForwardRegExp`: The value of this parameter is a regular expression that matches all filenames in forward direction. :code:`grepl` function in R is used to select forward reads from all **FASTA** files.
-  * :code:`suffixReverseRegExp`: The value of this parameter is a regular expression that matches all filenames in reverse direction. :code:`grepl` function in R is used to select reverse reads from all **FASTA** files.
+  * :code:`REGEX_SuffixForward`: The value of this parameter is a regular expression that matches all filenames in forward direction. :code:`grepl` function in R is used to select forward reads from all **FASTA** files.
+  * :code:`REGEX_SuffixReverse`: The value of this parameter is a regular expression that matches all filenames in reverse direction. :code:`grepl` function in R is used to select reverse reads from all **FASTA** files.
 
 
 No doubt read names in the original **FASTA** file will not follow the naming regulation; however, it is highly not recommended to change the name directly in the raw **FASTA** file. Therefore, we provide a feature to let users do read names mapping conversion by a **CSV** file showed in :ref:`Figure_2<SangerAlignment_read_names_conversion>`. The first column is "original_read_name" which are the read names in the raw **FASTA** file, and the second column is "analysis_read_name" which are the read names that follow the naming regulation. The read names will be mapped onto the names in "original_read_name" without changing the raw **FASTA** file. :code:`namesConversionCSV` is the parameter that stores the path to this **CSV** file.
@@ -52,7 +52,7 @@ Here, we have another more complicated example.
    Figure 3. *SangerAlignment* **FASTA** input file.
 
 
-:ref:`Figure_3<SangerAlignment_fasta_input>` shows the **FASTA** input file and the read names in it will be mapping conversed by **CSV** file showed in :ref:`Figure_2<SangerAlignment_read_names_conversion>` (Only two reads are showed). sangeranalyseR will first match the :code:`contigName` to exclude unrelated reads. The direction of reads in each contig will be grouped by matching :code:`suffixForwardRegExp` and :code:`suffixReverseRegExp` with read names. Therefore, it is important to carefully select :code:`suffixForwardRegExp` and :code:`suffixReverseRegExp`. The bad file naming and wrong regex matching might accidentally include reverse reads into the forward read list or vice versa, which will make the program generate totally wrong results. Therefore, users should have a consistent naming strategy. In this example, ":code:`_[0-9]+_F`", ":code:`_[0-9]+_R`" for matching forward and reverse reads are highly suggested and are used as default. It is a good habit to index your reads in the same contig group because there might be more than one read that are in the forward or reverse direction.
+:ref:`Figure_3<SangerAlignment_fasta_input>` shows the **FASTA** input file and the read names in it will be mapping conversed by **CSV** file showed in :ref:`Figure_2<SangerAlignment_read_names_conversion>` (Only two reads are showed). sangeranalyseR will first match the :code:`contigName` to exclude unrelated reads. The direction of reads in each contig will be grouped by matching :code:`REGEX_SuffixForward` and :code:`REGEX_SuffixReverse` with read names. Therefore, it is important to carefully select :code:`REGEX_SuffixForward` and :code:`REGEX_SuffixReverse`. The bad file naming and wrong regex matching might accidentally include reverse reads into the forward read list or vice versa, which will make the program generate totally wrong results. Therefore, users should have a consistent naming strategy. In this example, ":code:`_[0-9]+_F`", ":code:`_[0-9]+_R`" for matching forward and reverse reads are highly suggested and are used as default. It is a good habit to index your reads in the same contig group because there might be more than one read that are in the forward or reverse direction.
 
 .. _sangeranalyseR_filename_convention_SangerAlignment_fasta:
 .. figure::  ../image/sangeranalyseR_filename_convention_fasta.png
@@ -61,7 +61,7 @@ Here, we have another more complicated example.
 
    Figure 4. Suggested read naming regulation in **FASTA** file - *SangerAlignment*.
 
-:ref:`Figure_4<sangeranalyseR_filename_convention_SangerAlignment_fasta>` shows the suggested reads naming regulation. Users are strongly recommended to follow this reads naming regulation and use the default :code:`suffixForwardRegExp` : ":code:`_[0-9]+_F`" and :code:`suffixReverseRegExp` : ":code:`_[0-9]+_R`" to reduce any chance of error.
+:ref:`Figure_4<sangeranalyseR_filename_convention_SangerAlignment_fasta>` shows the suggested reads naming regulation. Users are strongly recommended to follow this reads naming regulation and use the default :code:`REGEX_SuffixForward` : ":code:`_[0-9]+_F`" and :code:`REGEX_SuffixReverse` : ":code:`_[0-9]+_R`" to reduce any chance of error.
 
 |
 
@@ -74,8 +74,8 @@ After preparing the input directory, we can create the *SangerAlignment* S4 inst
    sangerAlignmentFa <- SangerAlignment(inputSource           = "FASTA",
                                         fastaFileName         = "Sanger_all_reads.fa",
                                         namesConversionCSV    = "names_conversion.csv",
-                                        suffixForwardRegExp   = "_[0-9]+_F",
-                                        suffixReverseRegExp   = "_[0-9]+_R",
+                                        REGEX_SuffixForward   = "_[0-9]+_F",
+                                        REGEX_SuffixReverse   = "_[0-9]+_R",
                                         refAminoAcidSeq       = "SRQWLFSTNHKDIGTLYFIFGAWAGMVGTSLSILIRAELGHPGALIGDDQIYNVIVTAHAFIMIFFMVMPIMIGGFGNWLVPLMLGAPDMAFPRMNNMSFWLLPPALSLLLVSSMVENGAGTGWTVYPPLSAGIAHGGASVDLAIFSLHLAGISSILGAVNFITTVINMRSTGISLDRMPLFVWSVVITALLLLLSLPVLAGAITMLLTDRNLNTSFFDPAGGGDPILYQHLFWFFGHPEVYILILPGFGMISHIISQESGKKETFGSLGMIYAMLAIGLLGFIVWAHHMFTVGMDVDTRAYFTSATMIIAVPTGIKIFSWLATLHGTQLSYSPAILWALGFVFLFTVGGLTGVVLANSSVDIILHDTYYVVAHFHYVLSMGAVFAIMAGFIHWYPLFTGLTLNNKWLKSHFIIMFIGVNLTFFPQHFLGLAGMPRRYSDYPDAYTTWNIVSTIGSTISLLGILFFFFIIWESLVSQRQVIYPIQLNSSIEWYQNTPPAEHSYSELPLLTN"
                                         )
 

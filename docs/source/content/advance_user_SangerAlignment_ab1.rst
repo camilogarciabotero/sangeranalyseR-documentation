@@ -24,13 +24,13 @@ The main input file format to create *SangerAlignment* instance is **AB1**. Befo
     *  Forward or reverse direction also has to be specified in the filename.
 
 
-There are three parameters, :code:`parentDirectory`, :code:`suffixForwardRegExp`, and :code:`suffixReverseRegExp`, that users need to provide so that program can automatically group all **AB1** files.
+There are three parameters, :code:`ABIF_Directory`, :code:`REGEX_SuffixForward`, and :code:`REGEX_SuffixReverse`, that users need to provide so that program can automatically group all **AB1** files.
 
 .. note::
 
-  * :code:`parentDirectory`: The root directory that contains all the **AB1** files. It can be absolute or relative path. We suggest users to put only target **AB1** files inside this directory without other unrelated files.
-  * :code:`suffixForwardRegExp`: The value of this parameter is a regular expression that matches all filenames in forward direction. :code:`grepl` function in R is used to select forward reads from all **AB1** files.
-  * :code:`suffixReverseRegExp`: The value of this parameter is a regular expression that matches all filenames in reverse direction. :code:`grepl` function in R is used to select reverse reads from all **AB1** files.
+  * :code:`ABIF_Directory`: The root directory that contains all the **AB1** files. It can be absolute or relative path. We suggest users to put only target **AB1** files inside this directory without other unrelated files.
+  * :code:`REGEX_SuffixForward`: The value of this parameter is a regular expression that matches all filenames in forward direction. :code:`grepl` function in R is used to select forward reads from all **AB1** files.
+  * :code:`REGEX_SuffixReverse`: The value of this parameter is a regular expression that matches all filenames in reverse direction. :code:`grepl` function in R is used to select reverse reads from all **AB1** files.
 
 
 
@@ -47,7 +47,7 @@ For basic input files preparation example, please go to :ref:`Beginners Guide`. 
    Figure 2. Input ab1 files inside the parent directory, :code:`./tmp/`.
 
 
-:ref:`Figure_2<SangerAlignment_file_structure_complex>` shows the file naming regulation and directory hierarchy. In this example, the parent directory is :code:`extdata` and the directories in first layer are :code:`Allolobophora_chlorotica` and :code:`Drosophila_melanogaster`. All target **AB1** files need to be inside parent directory but it is not necessary to put them in the same level. sangeranalyseR will recursively search all files with **.ab1** file extension and automatically group reads with the same contig name. The direction of reads in each contig will be grouped by matching :code:`suffixForwardRegExp` and :code:`suffixReverseRegExp` with filenames. Therefore, it is important to carefully select :code:`suffixForwardRegExp` and :code:`suffixReverseRegExp`. The bad file naming regulation and wrong regex matching might accidentally include reverse reads into the forward read list or vice versa, which will make the program generate totally wrong results. Therefore, users should have a consistent naming strategy. In this example, ":code:`_[0-9]+_F`", ":code:`_[0-9]+_R`" for matching forward and reverse reads are highly suggested and are used as default. It is a good habit to index your reads in the same contig group because there might be more than one read that are in the forward or reverse direction.
+:ref:`Figure_2<SangerAlignment_file_structure_complex>` shows the file naming regulation and directory hierarchy. In this example, the parent directory is :code:`extdata` and the directories in first layer are :code:`Allolobophora_chlorotica` and :code:`Drosophila_melanogaster`. All target **AB1** files need to be inside parent directory but it is not necessary to put them in the same level. sangeranalyseR will recursively search all files with **.ab1** file extension and automatically group reads with the same contig name. The direction of reads in each contig will be grouped by matching :code:`REGEX_SuffixForward` and :code:`REGEX_SuffixReverse` with filenames. Therefore, it is important to carefully select :code:`REGEX_SuffixForward` and :code:`REGEX_SuffixReverse`. The bad file naming regulation and wrong regex matching might accidentally include reverse reads into the forward read list or vice versa, which will make the program generate totally wrong results. Therefore, users should have a consistent naming strategy. In this example, ":code:`_[0-9]+_F`", ":code:`_[0-9]+_R`" for matching forward and reverse reads are highly suggested and are used as default. It is a good habit to index your reads in the same contig group because there might be more than one read that are in the forward or reverse direction.
 
 .. _sangeranalyseR_filename_convention_SangerAlignment:
 .. figure::  ../image/sangeranalyseR_filename_convention.png
@@ -56,7 +56,7 @@ For basic input files preparation example, please go to :ref:`Beginners Guide`. 
 
    Figure 3. Suggested **AB1** file naming regulation - *SangerAlignment*.
 
-:ref:`Figure_3<sangeranalyseR_filename_convention_SangerAlignment>` shows the suggested **AB1** file naming regulation. Users are strongly recommended to follow this file naming regulation and use the default :code:`suffixForwardRegExp` : ":code:`_[0-9]+_F`" and :code:`suffixReverseRegExp` : ":code:`_[0-9]+_R`" to reduce any chance of error.
+:ref:`Figure_3<sangeranalyseR_filename_convention_SangerAlignment>` shows the suggested **AB1** file naming regulation. Users are strongly recommended to follow this file naming regulation and use the default :code:`REGEX_SuffixForward` : ":code:`_[0-9]+_F`" and :code:`REGEX_SuffixReverse` : ":code:`_[0-9]+_R`" to reduce any chance of error.
 
 |
 
@@ -67,9 +67,9 @@ After preparing the input directory, we can create the *SangerAlignment* S4 inst
 .. code-block:: R
 
    sangerAlignment <- SangerAlignment(inputSource          = "ABIF",
-                                      parentDirectory      = "./tmp/",
-                                      suffixForwardRegExp  = "_[0-9]+_F",
-                                      suffixReverseRegExp  = "_[0-9]+_R",
+                                      ABIF_Directory      = "./tmp/",
+                                      REGEX_SuffixForward  = "_[0-9]+_F",
+                                      REGEX_SuffixReverse  = "_[0-9]+_R",
                                       refAminoAcidSeq      = "SRQWLFSTNHKDIGTLYFIFGAWAGMVGTSLSILIRAELGHPGALIGDDQIYNVIVTAHAFIMIFFMVMPIMIGGFGNWLVPLMLGAPDMAFPRMNNMSFWLLPPALSLLLVSSMVENGAGTGWTVYPPLSAGIAHGGASVDLAIFSLHLAGISSILGAVNFITTVINMRSTGISLDRMPLFVWSVVITALLLLLSLPVLAGAITMLLTDRNLNTSFFDPAGGGDPILYQHLFWFFGHPEVYILILPGFGMISHIISQESGKKETFGSLGMIYAMLAIGLLGFIVWAHHMFTVGMDVDTRAYFTSATMIIAVPTGIKIFSWLATLHGTQLSYSPAILWALGFVFLFTVGGLTGVVLANSSVDIILHDTYYVVAHFHYVLSMGAVFAIMAGFIHWYPLFTGLTLNNKWLKSHFIIMFIGVNLTFFPQHFLGLAGMPRRYSDYPDAYTTWNIVSTIGSTISLLGILFFFFIIWESLVSQRQVIYPIQLNSSIEWYQNTPPAEHSYSELPLLTN",
                                       TrimmingMethod        = "M1",
                                       M1TrimmingCutoff      = 0.0001,
